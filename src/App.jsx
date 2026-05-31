@@ -53,6 +53,9 @@ const ensureDate = (v) => {
   if (v instanceof Date) return normalizeToLocalMidnight(v);
   if (typeof v.toDate === "function") return normalizeToLocalMidnight(v.toDate());
   if (v.seconds != null) return normalizeToLocalMidnight(new Date(v.seconds * 1000));
+  const s = norm(v);
+  const m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+  if (m) return normalizeToLocalMidnight(new Date(parseInt(m[3],10), parseInt(m[2],10)-1, parseInt(m[1],10)));
   const d = new Date(v);
   return isNaN(d.getTime()) ? null : normalizeToLocalMidnight(d);
 };
@@ -239,9 +242,20 @@ function parseSheet(rows) {
   };
   const fmtData = (v) => {
     if (v instanceof Date) return `${String(v.getDate()).padStart(2, "0")}/${String(v.getMonth() + 1).padStart(2, "0")}`;
-    return norm(v);
+    const s = norm(v);
+    const m = s.match(/^(\d{1,2})[\/\-](\d{1,2})/);
+    if (m) return `${m[1].padStart(2, "0")}/${m[2].padStart(2, "0")}`;
+    return s;
   };
-  const getTs = (v) => (v instanceof Date ? v.getTime() : (Date.parse(v) || 0));
+  const getTs = (v) => {
+    if (v instanceof Date) return v.getTime();
+    const s = norm(v);
+    const m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+    if (m) return new Date(parseInt(m[3], 10), parseInt(m[2], 10) - 1, parseInt(m[1], 10)).getTime();
+    const m2 = s.match(/^(\d{1,2})[\/\-](\d{1,2})/);
+    if (m2) return new Date(new Date().getFullYear(), parseInt(m2[2], 10) - 1, parseInt(m2[1], 10)).getTime();
+    return Date.parse(s) || 0;
+  };
   return rows.filter((r) => norm(safeGet(r, K.chapa)) && norm(safeGet(r, K.nome))).map((r) => ({
     chapa: norm(safeGet(r, K.chapa)), nome: norm(safeGet(r, K.nome)), obra: norm(safeGet(r, K.obra)),
     funcao: norm(safeGet(r, K.funcao)) || "—", situacao: norm(safeGet(r, K.situacao)).toUpperCase(),
@@ -515,10 +529,10 @@ function UploadScreen({ onData, onDemo }) {
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
-        const wb = XLSX.read(e.target.result, { type: "array", cellDates: true });
+        const wb = XLSX.read(e.target.result, { type: "array" });
         const sheetName = wb.SheetNames.at(0);
         const sheet = Reflect.get(wb.Sheets, sheetName);
-        const rows = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+        const rows = XLSX.utils.sheet_to_json(sheet, { defval: "", raw: false });
         const data = parseSheet(rows);
         if (!data.length) throw new Error();
         onData(data, file.name);
@@ -1567,10 +1581,10 @@ function AbaImportar({ onImport, onDemo, temDados, fileName, onFeriasImport, tem
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
-        const wb = XLSX.read(e.target.result, { type: "array", cellDates: true });
+        const wb = XLSX.read(e.target.result, { type: "array" });
         const sheetName = wb.SheetNames.at(0);
         const sheet = Reflect.get(wb.Sheets, sheetName);
-        const rows = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+        const rows = XLSX.utils.sheet_to_json(sheet, { defval: "", raw: false });
         const dados = parseSheet(rows);
         if (!dados.length) throw new Error();
         onImport(dados, file.name);
@@ -1584,10 +1598,10 @@ function AbaImportar({ onImport, onDemo, temDados, fileName, onFeriasImport, tem
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
-        const wb = XLSX.read(e.target.result, { type: "array", cellDates: true });
+        const wb = XLSX.read(e.target.result, { type: "array" });
         const sheetName = wb.SheetNames.at(0);
         const sheet = Reflect.get(wb.Sheets, sheetName);
-        const rows = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+        const rows = XLSX.utils.sheet_to_json(sheet, { defval: "", raw: false });
         const dados = parseFeriasSheet(rows);
         if (!dados.length) throw new Error("Nenhum dado encontrado para seções 948/935.");
         onFeriasImport(dados, file.name);
