@@ -40,13 +40,21 @@ const safeGet = (obj, key) => {
   return Reflect.get(obj, key);
 };
 
+const normalizeToLocalMidnight = (d) => {
+  if (!d || isNaN(d.getTime())) return null;
+  if (d.getUTCHours() === 0 && d.getUTCMinutes() === 0 && d.getUTCSeconds() === 0) {
+    return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+  }
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+};
+
 const ensureDate = (v) => {
   if (!v) return null;
-  if (v instanceof Date) return v;
-  if (typeof v.toDate === "function") return v.toDate();
-  if (v.seconds != null) return new Date(v.seconds * 1000);
+  if (v instanceof Date) return normalizeToLocalMidnight(v);
+  if (typeof v.toDate === "function") return normalizeToLocalMidnight(v.toDate());
+  if (v.seconds != null) return normalizeToLocalMidnight(new Date(v.seconds * 1000));
   const d = new Date(v);
-  return isNaN(d.getTime()) ? null : d;
+  return isNaN(d.getTime()) ? null : normalizeToLocalMidnight(d);
 };
 
 const compressAndSavePhoto = (file) => {
@@ -265,14 +273,20 @@ function parseFeriasSheet(rows) {
     dataLimite: find("DATA_LIMITE", "DATALIMITE", "LIMITE"),
   };
   const parseDataLimite = (v) => {
-    if (v instanceof Date) return v;
+    if (v instanceof Date) return normalizeToLocalMidnight(v);
+    if (typeof v === "number" || (!isNaN(v) && !isNaN(parseFloat(v)))) {
+      const num = Number(v);
+      if (num > 30000 && num < 60000) {
+        return normalizeToLocalMidnight(new Date(Math.round((num - 25569) * 86400 * 1000)));
+      }
+    }
     const s = norm(v);
     const m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
-    if (m) return new Date(parseInt(m[3],10), parseInt(m[2],10)-1, parseInt(m[1],10));
+    if (m) return normalizeToLocalMidnight(new Date(parseInt(m[3],10), parseInt(m[2],10)-1, parseInt(m[1],10)));
     const m2 = s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
-    if (m2) return new Date(parseInt(m2[1],10), parseInt(m2[2],10)-1, parseInt(m2[3],10));
+    if (m2) return normalizeToLocalMidnight(new Date(parseInt(m2[1],10), parseInt(m2[2],10)-1, parseInt(m2[3],10)));
     const d = new Date(s);
-    return isNaN(d.getTime()) ? null : d;
+    return isNaN(d.getTime()) ? null : normalizeToLocalMidnight(d);
   };
   return rows
     .filter((r) => {
@@ -1400,8 +1414,9 @@ function AbaFerias({ feriasData, feriasFileName, onNav }) {
 
   const getUrgencia = (dl) => {
     if (!dl) return { label: "Sem data", color: "#94A3B8", bg: "#F1F5F9" };
-    const diff = Math.ceil((dl.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
+    const diff = Math.round((dl.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
     if (diff < 0) return { label: "Vencida", color: "#fff", bg: DANGER };
+    if (diff === 0) return { label: "Vence hoje", color: "#fff", bg: DANGER };
     if (diff <= 30) return { label: `${diff}d restantes`, color: DANGER, bg: "#FDECEC" };
     if (diff <= 90) return { label: `${diff}d restantes`, color: "#B45309", bg: "#FEF3C7" };
     return { label: `${diff}d restantes`, color: OK, bg: "#E1F5EE" };
