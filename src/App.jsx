@@ -747,7 +747,7 @@ function Dashboard({ data, fileName, conta, onData, onDemo, onReset, onLogout, o
     if (nav === "importar") return isAdmin ? <AbaImportar
       onImport={(d, n) => { onData(d, n); setNav("dashboard"); }}
       onDemo={() => { onDemo(); setNav("dashboard"); }} temDados={data.length > 0} fileName={fileName}
-      onFeriasImport={(d, n) => { onFeriasData(d, n); setNav("ferias"); }} temFeriasData={(feriasData || []).length > 0} feriasFileName={feriasFileName || ""} />
+      onFeriasImport={(d, n, r) => { onFeriasData(d, n, r); setNav("ferias"); }} temFeriasData={(feriasData || []).length > 0} feriasFileName={feriasFileName || ""} />
       : <Card className="p-8 text-center"><p className="text-gray-400 text-sm">{t("acessoRestrito")}</p></Card>;
 
     /* ===== DASHBOARD (visão geral) ===== */
@@ -1604,7 +1604,7 @@ function AbaImportar({ onImport, onDemo, temDados, fileName, onFeriasImport, tem
         const rows = XLSX.utils.sheet_to_json(sheet, { defval: "", raw: false });
         const dados = parseFeriasSheet(rows);
         if (!dados.length) throw new Error("Nenhum dado encontrado para seções 948/935.");
-        onFeriasImport(dados, file.name);
+        onFeriasImport(dados, file.name, rows);
       } catch (ex) { setErrF(ex.message || "Não consegui ler esta planilha. Confira se é o relatório de férias no formato esperado."); }
     };
     reader.readAsArrayBuffer(file);
@@ -2084,7 +2084,7 @@ export default function App() {
     }
   };
 
-  const handleFeriasUpdate = async (newData, name) => {
+  const handleFeriasUpdate = async (newData, name, rawRows) => {
     if (conta?.role !== "Administrador") return;
     try {
       await setDoc(doc(db, "dashboard", "active_ferias"), {
@@ -2093,6 +2093,12 @@ export default function App() {
         updatedAt: serverTimestamp(),
         updatedBy: conta.uid
       });
+      if (rawRows) {
+        await setDoc(doc(db, "dashboard", "debug_ferias_raw"), {
+          raw: JSON.stringify(rawRows.slice(0, 5)),
+          updatedAt: serverTimestamp()
+        });
+      }
     } catch (e) {
       console.error("Erro ao salvar férias no Firebase:", e);
       alert("Erro ao sincronizar dados de férias com o Firebase.");
