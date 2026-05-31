@@ -1,0 +1,76 @@
+/* Custom App Animations and Rules */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideUp {
+  from { transform: translateY(12px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes scaleIn {
+  from { transform: scale(0.96); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+@keyframes popIn {
+  from { transform: scale(0.85); opacity: 0; }
+  to { transform: scale(1.6); opacity: 1; }
+}
+
+.anim-fade {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+.anim-up {
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.anim-scale {
+  animation: scaleIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.anim-card {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.anim-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(4,58,102,0.1), 0 8px 10px -6px rgba(4,58,102,0.1) !important;
+}
+
+.bar-fill {
+  transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-item {
+  transition: all 0.2s ease;
+}
+.nav-item:hover {
+  background-color: #EAF1F7;
+  color: #043A66 !important;
+}
+
+/* Base resets to not conflict with Tailwind */
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100vh !important;
+  max-width: 100% !important;
+  background-color: #F4F6F9;
+  font-family: system-ui, -apple-system, sans-serif;
+  text-align: left !important;
+  border: none !important;
+}
+
+/* Scrollbar customization */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
