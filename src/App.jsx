@@ -1829,19 +1829,19 @@ function AuthScreen({ onAuth }) {
                 <input style={inputStyle} type="password" value={pass} placeholder="••••••••"
                   onChange={(e) => setPass(e.target.value)} onKeyDown={(e) => e.key === "Enter" && doCred()} /></div>
               <div className="flex justify-end mb-5">
-                <button className="text-xs" style={{ color: NAVY_MED }}>{t("esqueceuSenha")}</button>
+                <button type="button" className="text-xs" style={{ color: NAVY_MED }}>{t("esqueceuSenha")}</button>
               </div>
               <button onClick={doCred} className="w-full py-3 rounded-xl btn-primary text-white font-medium text-sm flex items-center justify-center gap-2" style={{ background: NAVY }}>
                 {t("entrar")} <ChevronRight size={16} /></button>
               <div className="flex items-center gap-3 my-6"><div className="flex-1 h-px" style={{ background: "#EDF1F5" }} /><span className="text-xs text-gray-400">ou</span><div className="flex-1 h-px" style={{ background: "#EDF1F5" }} /></div>
               <p className="text-center text-sm text-gray-500">Não tem uma conta?
-                <button onClick={() => { setMode("register"); setErr(""); setMsg(""); }} className="font-semibold ml-1" style={{ color: NAVY_MED }}>{t("cadastreSe")}</button></p>
+                <button type="button" onClick={() => { setMode("register"); setErr(""); setMsg(""); }} className="font-semibold ml-1" style={{ color: NAVY_MED }}>{t("cadastreSe")}</button></p>
             </>
           )}
 
           {mode === "login" && step === "token" && (
             <>
-              <button onClick={() => { setStep("cred"); setToken(""); setErr(""); }} className="text-sm mb-4 flex items-center gap-1" style={{ color: NAVY_MED }}>‹ {t("voltar")}</button>
+              <button type="button" onClick={() => { setStep("cred"); setToken(""); setErr(""); }} className="text-sm mb-4 flex items-center gap-1" style={{ color: NAVY_MED }}>‹ {t("voltar")}</button>
               <h2 className="font-bold mb-1" style={{ color: NAVY_DARK, fontSize: 28 }}>{t("verificacao")}</h2>
               <p className="text-gray-400 text-sm mb-6">{t("digiteCodigo")}</p>
               <div className="mb-5"><Label>{t("verificacao")}</Label>
@@ -1867,7 +1867,7 @@ function AuthScreen({ onAuth }) {
               <div className="mb-5"><Label>{t("perfilAcesso")}</Label>
                 <div className="grid grid-cols-2 gap-2">
                   {["Administrador", "Gerente"].map((r) => (
-                    <button key={r} onClick={() => setRRole(r)} className="py-2.5 rounded-xl text-sm font-medium transition-colors"
+                    <button type="button" key={r} onClick={() => setRRole(r)} className="py-2.5 rounded-xl text-sm font-medium transition-colors"
                       style={{ background: rRole === r ? NAVY : "#fff", color: rRole === r ? "#fff" : "#5B6B7B",
                         border: `1px solid ${rRole === r ? NAVY : "#D8E0E8"}` }}>{r}</button>
                   ))}
@@ -1876,7 +1876,7 @@ function AuthScreen({ onAuth }) {
               </div>
               <button onClick={doRegister} className="w-full py-3 rounded-xl btn-primary text-white font-medium text-sm" style={{ background: NAVY }}>{t("cadastrar")}</button>
               <p className="text-center text-sm text-gray-500 mt-6">Já tem conta?
-                <button onClick={() => { setMode("login"); setErr(""); }} className="font-semibold ml-1" style={{ color: NAVY_MED }}>{t("fazerLogin")}</button></p>
+                <button type="button" onClick={() => { setMode("login"); setErr(""); }} className="font-semibold ml-1" style={{ color: NAVY_MED }}>{t("fazerLogin")}</button></p>
             </>
           )}
 
