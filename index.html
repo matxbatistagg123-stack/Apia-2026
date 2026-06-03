@@ -9,10 +9,36 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Herr+Von+Muellerhoff&display=swap" rel="stylesheet" />
-    <script type="module" crossorigin src="/Apia-2026/assets/index-s20wK79H.js"></script>
-    <link rel="stylesheet" crossorigin href="/Apia-2026/assets/index-CneeJ7_g.css">
+    <script type="module" crossorigin src="/Apia-2026/assets/index-MCOpZt46.js"></script>
+    <link rel="stylesheet" crossorigin href="/Apia-2026/assets/index-Bkh2pRw2.css">
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Fallback visual inline: aparece enquanto o React carrega -->
+      <div id="app-loading" style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#043A66;font-family:system-ui,sans-serif;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:16px;">
+          <svg width="56" height="56" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#fff"/><path d="M50 22 L78 74 L22 74 Z" fill="none" stroke="#043A66" stroke-width="6"/><path d="M50 42 L64 68 L36 68 Z" fill="#043A66"/></svg>
+          <div style="text-align:center;"><h2 style="color:#fff;font-weight:700;font-size:18px;letter-spacing:0.2em;margin:0;">ÁPIA</h2><p style="color:rgba(255,255,255,0.5);font-size:11px;margin:4px 0 0;font-weight:500;letter-spacing:0.15em;">Gestão de Ponto</p></div>
+          <div style="display:flex;align-items:center;gap:8px;"><span style="color:rgba(255,255,255,0.7);font-size:13px;">Carregando</span><span style="display:flex;gap:4px;"><span style="width:5px;height:5px;border-radius:50%;background:#fff;animation:ldBounce .8s ease-in-out infinite;animation-delay:0ms;"></span><span style="width:5px;height:5px;border-radius:50%;background:#fff;animation:ldBounce .8s ease-in-out infinite;animation-delay:150ms;"></span><span style="width:5px;height:5px;border-radius:50%;background:#fff;animation:ldBounce .8s ease-in-out infinite;animation-delay:300ms;"></span></span></div>
+        </div>
+        <style>@keyframes ldBounce{0%,100%{transform:translateY(0);opacity:.4}50%{transform:translateY(-6px);opacity:1}}</style>
+      </div>
+    </div>
+    <!-- Captura global de erros JS para nunca deixar tela branca -->
+    <script>
+      window.onerror = function(msg, src, line, col, err) {
+        var el = document.getElementById('app-loading');
+        if (el) {
+          el.innerHTML = '<div style="text-align:center;padding:32px;"><svg width="48" height="48" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#fff"/><path d="M50 22 L78 74 L22 74 Z" fill="none" stroke="#043A66" stroke-width="6"/><path d="M50 42 L64 68 L36 68 Z" fill="#043A66"/></svg><h2 style="color:#fff;margin:16px 0 8px;font-size:16px;">Erro ao carregar</h2><p style="color:rgba(255,255,255,0.6);font-size:12px;max-width:300px;margin:0 auto;">' + (msg || 'Erro desconhecido') + '</p><button onclick="location.reload()" style="margin-top:16px;padding:10px 24px;border-radius:12px;background:#EF9F27;color:#fff;font-weight:700;font-size:13px;border:none;cursor:pointer;">Recarregar</button></div>';
+        }
+        return false;
+      };
+      window.addEventListener('unhandledrejection', function(e) {
+        var el = document.getElementById('app-loading');
+        if (el && el.children.length > 0) {
+          console.error('Unhandled promise rejection:', e.reason);
+        }
+      });
+    </script>
   </body>
 </html>
